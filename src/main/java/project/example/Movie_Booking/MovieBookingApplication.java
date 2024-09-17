@@ -5,8 +5,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import project.example.Movie_Booking.controllers.*;
-import project.example.Movie_Booking.dtos.CreateUserRequestDto;
+import project.example.Movie_Booking.dtos.RegisterActorRequestDto;
+import project.example.Movie_Booking.dtos.RegisterMovieRequestDto;
+import project.example.Movie_Booking.dtos.RegisterUserRequestDto;
 import project.example.Movie_Booking.models.Language;
+import project.example.Movie_Booking.models.MovieFeature;
 import project.example.Movie_Booking.models.SeatType;
 
 import java.util.Date;
@@ -24,6 +27,8 @@ public class MovieBookingApplication implements CommandLineRunner {
 	private SeatController seatController;
 	private TicketController ticketController;
 	private ShowController showController;
+	private ActorController actorController;
+	private MovieController movieController;
 	@Autowired
 	public MovieBookingApplication(UserController userController,
 								   CityController cityController,
@@ -31,7 +36,10 @@ public class MovieBookingApplication implements CommandLineRunner {
 								   AuditoriumController auditoriumController,
 								   SeatController seatController,
 								   TicketController ticketController,
-								   ShowController showController){
+								   ShowController showController,
+								   ActorController actorController,
+								   MovieController movieController){
+		this.movieController=movieController;
 		this.userController=userController;
 		this.cityController=cityController;
 		this.theatreController=theatreController;
@@ -39,6 +47,7 @@ public class MovieBookingApplication implements CommandLineRunner {
 		this.seatController=seatController;
 		this.ticketController=ticketController;
 		this.showController=showController;
+		this.actorController=actorController;
 	}
 	public static void main(String[] args) {
 
@@ -47,10 +56,10 @@ public class MovieBookingApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		CreateUserRequestDto request=new CreateUserRequestDto();
+		RegisterUserRequestDto request=new RegisterUserRequestDto();
 		request.setEmail("samadhantilkar@gmail.com");
 
-		this.userController.createUser(request);
+		this.userController.registerUser(request);
 		this.cityController.addCity("Nahsik");
 		this.theatreController.createTheatre("PVR",
 				"City Central Mall, Nashik",1L);
@@ -61,6 +70,18 @@ public class MovieBookingApplication implements CommandLineRunner {
 		seatsForAudi.put(SeatType.VIP,20);
 		seatsForAudi.put(SeatType.GOLD,100);
 		this.seatController.createSeats(1L,seatsForAudi);
+
+		RegisterActorRequestDto registerActorRequestDto=new RegisterActorRequestDto();
+		registerActorRequestDto.setName("Anushaka Sharma");
+		actorController.registerActor(registerActorRequestDto);
+
+		RegisterMovieRequestDto registerMovieRequestDto=new RegisterMovieRequestDto();
+		registerMovieRequestDto.setName("Sairat");
+		registerMovieRequestDto.setLength(180);
+		registerMovieRequestDto.setMovieFeatures(List.of(MovieFeature.THREE_D,MovieFeature.DOLBY));
+		registerMovieRequestDto.setLanguages(List.of(Language.MARATHI));
+		registerMovieRequestDto.setActorID(List.of(1L));
+		movieController.registerMovie(registerMovieRequestDto);
 
 		this.showController.createShow(0L,new Date(),new Date(),
 				1L,null, Language.ENGLISH);

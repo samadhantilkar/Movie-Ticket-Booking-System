@@ -19,7 +19,7 @@ public class UserService {
 
     public User createUser(String email){
         User user=new User();
-//        user.setEmail(email);
+        user.setEmail(email);
 
         User savedUser=userRepository.save(user);
 

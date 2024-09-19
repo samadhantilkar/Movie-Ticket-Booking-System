@@ -2,6 +2,8 @@ package project.example.Movie_Booking.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import project.example.Movie_Booking.dtos.RegisterSeatsIntoAuditoriumRequestDto;
+import project.example.Movie_Booking.dtos.RegisterSeatsIntoAuditoriumResponseDto;
 import project.example.Movie_Booking.models.Seat;
 import project.example.Movie_Booking.models.SeatType;
 import project.example.Movie_Booking.services.SeatService;
@@ -18,9 +20,8 @@ public class SeatController {
         this.seatService=service;
     }
 //    Map<SeatType,Integer> seatTypePrice
-    public List<Seat> createSeats(Long auditoriumId,
-                                  Map<SeatType,Integer> seatCount) throws Exception
+    public RegisterSeatsIntoAuditoriumResponseDto createSeats(RegisterSeatsIntoAuditoriumRequestDto requestDto) throws Exception
     {
-        return seatService.createSeats(auditoriumId,seatCount);
+        return seatService.createSeats(requestDto);
     }
 }

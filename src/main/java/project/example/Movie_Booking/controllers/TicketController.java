@@ -5,6 +5,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+import project.example.Movie_Booking.dtos.BookTicketRequestDto;
+import project.example.Movie_Booking.dtos.BookTicketResponseDto;
 import project.example.Movie_Booking.models.Ticket;
 import project.example.Movie_Booking.models.User;
 import project.example.Movie_Booking.services.TicketService;
@@ -20,10 +22,8 @@ public class TicketController {
         this.ticketService=ticketService;
     }
 
-    public Ticket bookTicket(Long showId,
-                             List<Long> showSeatIds,
-                             Long userId) throws Exception
+    public BookTicketResponseDto bookTicket(BookTicketRequestDto bookTicketRequestDto) throws Exception
     {
-        return ticketService.bookTicket(showId,showSeatIds,userId);
+        return ticketService.bookTicket(bookTicketRequestDto);
     }
 }

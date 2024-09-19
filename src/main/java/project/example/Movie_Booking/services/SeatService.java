@@ -2,6 +2,9 @@ package project.example.Movie_Booking.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import project.example.Movie_Booking.dtos.RegisterSeatsIntoAuditoriumRequestDto;
+import project.example.Movie_Booking.dtos.RegisterSeatsIntoAuditoriumResponseDto;
+import project.example.Movie_Booking.dtos.ResponseDtoStatus;
 import project.example.Movie_Booking.exceptions.InvalidAuditoriumId;
 import project.example.Movie_Booking.models.Auditorium;
 import project.example.Movie_Booking.models.Seat;
@@ -26,10 +29,9 @@ public class SeatService {
         this.auditoriumRepository=auditoriumRepository;
         this.seatRepository=seatRepository;
     }
-    public List<Seat> createSeats(Long auditoriumId,
-                            Map<SeatType,Integer> seatCount) throws Exception
+    public RegisterSeatsIntoAuditoriumResponseDto createSeats(RegisterSeatsIntoAuditoriumRequestDto requestDto) throws Exception
     {
-        Optional<Auditorium> optionalAuditorium=auditoriumRepository.findById(auditoriumId);
+        Optional<Auditorium> optionalAuditorium=auditoriumRepository.findById(requestDto.getAuditoriumId());
         if(optionalAuditorium.isEmpty()){
             throw new InvalidAuditoriumId("Invalid Auditorium Id");
         }
@@ -38,7 +40,7 @@ public class SeatService {
 
         List<Seat> seats=new ArrayList<>();
 
-        for(Map.Entry<SeatType,Integer> entry :seatCount.entrySet()){
+        for(Map.Entry<SeatType,Integer> entry :requestDto.getSeatCount().entrySet()){
             for(int i=0;i<entry.getValue();i++){
                 Seat seat=new Seat();
                 seat.setSeatType(entry.getKey());
@@ -52,6 +54,9 @@ public class SeatService {
         auditorium.setSeats(savedSeats);
         auditoriumRepository.save(auditorium);
 
-        return savedSeats;
+        RegisterSeatsIntoAuditoriumResponseDto responseDto=new RegisterSeatsIntoAuditoriumResponseDto();
+        responseDto.setSeats(savedSeats);;
+        responseDto.setStatus(ResponseDtoStatus.SUCCESS);
+        return responseDto;
     }
 }

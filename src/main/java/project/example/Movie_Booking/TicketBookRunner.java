@@ -1,6 +1,7 @@
 package project.example.Movie_Booking;
 
 import project.example.Movie_Booking.controllers.TicketController;
+import project.example.Movie_Booking.dtos.BookTicketRequestDto;
 import project.example.Movie_Booking.services.TicketService;
 
 import java.util.List;
@@ -8,25 +9,19 @@ import java.util.List;
 public class TicketBookRunner implements Runnable{
 
     private TicketController ticketController;
-    private Long showId;
-    private List<Long> showSeatId;
-    private Long userId;
+    private BookTicketRequestDto requestDto;
 
     public TicketBookRunner(TicketController ticketController,
-                            Long showId,
-                            List<Long> showSeatId,
-                            Long userId){
+                            BookTicketRequestDto requestDto){
         this.ticketController=ticketController;
-        this.showId=showId;
-        this.showSeatId=showSeatId;
-        this.userId=userId;
+        this.requestDto=requestDto;
     }
 
 
     @Override
     public void run() {
           try{
-                this.ticketController.bookTicket(showId,showSeatId,userId);
+                this.ticketController.bookTicket(requestDto);
           }
           catch (Exception exception){
               System.out.println("EXCEPTIOOOOOOON:   " +exception.getMessage());

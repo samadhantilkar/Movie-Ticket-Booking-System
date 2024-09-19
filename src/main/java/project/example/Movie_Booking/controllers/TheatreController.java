@@ -2,8 +2,9 @@ package project.example.Movie_Booking.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import project.example.Movie_Booking.dtos.RegisterTheatreRequestDto;
+import project.example.Movie_Booking.dtos.RegisterTheatreResponseDto;
 import project.example.Movie_Booking.exceptions.TheatreNotFound;
-import project.example.Movie_Booking.models.Theatre;
 import project.example.Movie_Booking.services.TheatreService;
 
 @Controller
@@ -15,9 +16,7 @@ public class TheatreController {
         this.theatreService=theatreService;
     }
 
-    public Theatre createTheatre(String name,
-                                 String address,
-                                 Long cityId ) throws TheatreNotFound {
-        return this.theatreService.createTheatre(name,address,cityId);
+    public RegisterTheatreResponseDto registerTheatre(RegisterTheatreRequestDto requestDto) throws TheatreNotFound {
+        return this.theatreService.registerTheatre(requestDto);
     }
 }

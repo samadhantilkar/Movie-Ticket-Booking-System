@@ -2,6 +2,8 @@ package project.example.Movie_Booking.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import project.example.Movie_Booking.dtos.CreateShowRequestDto;
+import project.example.Movie_Booking.dtos.CreateShowResponseDto;
 import project.example.Movie_Booking.models.Language;
 import project.example.Movie_Booking.models.SeatType;
 import project.example.Movie_Booking.models.Show;
@@ -19,13 +21,8 @@ public class ShowController  {
         this.showService=showService;
     }
 
-    public Show createShow(Long movieId,
-                           Date startTime,
-                           Date endTime,
-                           Long audiId,
-                           Map<SeatType,Integer> showSeatPrice,
-                           Language language)
+    public CreateShowResponseDto createShow(CreateShowRequestDto requestDto)
     {
-        return showService.createShow(movieId, startTime, endTime, audiId, showSeatPrice, language);
+        return showService.createShow(requestDto);
     }
 }

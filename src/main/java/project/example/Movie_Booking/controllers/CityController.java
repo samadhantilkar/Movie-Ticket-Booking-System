@@ -2,6 +2,8 @@ package project.example.Movie_Booking.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import project.example.Movie_Booking.dtos.RegisterCityRequestDto;
+import project.example.Movie_Booking.dtos.RegisterCityResponseDto;
 import project.example.Movie_Booking.models.City;
 import project.example.Movie_Booking.services.CityService;
 
@@ -14,7 +16,8 @@ public class CityController {
         this.cityService=cityService;
     }
 
-    public City addCity(String name){
-        return this.cityService.addCity(name);
+    public RegisterCityResponseDto addCity(RegisterCityRequestDto requestDto){
+
+        return this.cityService.addCity(requestDto);
     }
 }

@@ -2,6 +2,9 @@ package project.example.Movie_Booking.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import project.example.Movie_Booking.dtos.RegisterAuditoriumRequestDto;
+import project.example.Movie_Booking.dtos.RegisterAuditoriumResponseDto;
+import project.example.Movie_Booking.dtos.ResponseDtoStatus;
 import project.example.Movie_Booking.exceptions.InvalidCityId;
 import project.example.Movie_Booking.exceptions.TheatreNotFound;
 import project.example.Movie_Booking.models.Auditorium;
@@ -23,17 +26,16 @@ public class AuditoriumService {
         this.theatreRepository=theatreRepository;
     }
 
-    public Auditorium addAuditorium(String name,int capacity,
-                                    Long theatreId) throws TheatreNotFound {
+    public RegisterAuditoriumResponseDto addAuditorium(RegisterAuditoriumRequestDto requestDto) throws TheatreNotFound {
 //        Fetch The Theatre
-        Optional<Theatre> optionalTheatre=theatreRepository.findById(theatreId);
+        Optional<Theatre> optionalTheatre=theatreRepository.findById(requestDto.getTheatreId());
         if(!optionalTheatre.isPresent()){
             throw new TheatreNotFound("Invlide Theatre Id");
         }
 //        Create Auditorium
         Auditorium auditorium=new Auditorium();
-        auditorium.setName(name);
-        auditorium.setCapacity(capacity);
+        auditorium.setName(requestDto.getName());
+        auditorium.setCapacity(requestDto.getCapacity());
         auditorium.setTheatre(optionalTheatre.get());
 
 //        Save Auditorium
@@ -46,6 +48,8 @@ public class AuditoriumService {
 
 //        Save in db
         this.theatreRepository.save(dbTheatre);
-        return savedAuditorium;
+        RegisterAuditoriumResponseDto responseDto=new RegisterAuditoriumResponseDto();
+        responseDto.setStatus(ResponseDtoStatus.SUCCESS);
+        return responseDto;
     }
 }

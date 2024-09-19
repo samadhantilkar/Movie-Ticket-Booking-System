@@ -37,6 +37,7 @@ public class AuditoriumService {
         auditorium.setName(requestDto.getName());
         auditorium.setCapacity(requestDto.getCapacity());
         auditorium.setTheatre(optionalTheatre.get());
+        auditorium.setAuditoriumFeatures(requestDto.getAuditoriumFeatures());
 
 //        Save Auditorium
         Auditorium savedAuditorium=auditoriumRepository.save(auditorium);

@@ -7,9 +7,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import project.example.Movie_Booking.controllers.*;
 import project.example.Movie_Booking.dtos.*;
-import project.example.Movie_Booking.models.SeatType;
+import project.example.Movie_Booking.models.*;
 
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @SpringBootApplication
@@ -71,37 +73,43 @@ public class MovieBookingApplication implements CommandLineRunner {
 		registerAuditoriumRequestDto.setCapacity(120);
 		registerAuditoriumRequestDto.setTheatreId(1L);
 		registerAuditoriumRequestDto.setName("Hall");
+		registerAuditoriumRequestDto.setAuditoriumFeatures(List.of(AuditoriumFeature.DOLBY,AuditoriumFeature.THREE_D));
 		this.auditoriumController.createAuditorium(registerAuditoriumRequestDto);
 
+		RegisterSeatsIntoAuditoriumRequestDto registerSeatsIntoAuditoriumRequestDto=new RegisterSeatsIntoAuditoriumRequestDto();
 		Map<SeatType ,Integer> seatsForAudi=new HashMap<>();
 		seatsForAudi.put(SeatType.VIP,20);
 		seatsForAudi.put(SeatType.GOLD,100);
-		this.seatController.createSeats(1L,seatsForAudi);
+		registerSeatsIntoAuditoriumRequestDto.setAuditoriumId(1L);
+		registerSeatsIntoAuditoriumRequestDto.setSeatCount(seatsForAudi);
+		this.seatController.createSeats(registerSeatsIntoAuditoriumRequestDto);
 
-//		RegisterActorRequestDto registerActorRequestDto=new RegisterActorRequestDto();
-//		registerActorRequestDto.setName("Anushaka Sharma");
-//		actorController.registerActor(registerActorRequestDto);
+		RegisterActorRequestDto registerActorRequestDto=new RegisterActorRequestDto();
+		registerActorRequestDto.setName("Anushaka Sharma");
+		actorController.registerActor(registerActorRequestDto);
 
-//		RegisterMovieRequestDto registerMovieRequestDto=new RegisterMovieRequestDto();
-//		registerMovieRequestDto.setName("Sairat");
-//		registerMovieRequestDto.setLength(180);
-//		registerMovieRequestDto.setMovieFeatures(List.of(MovieFeature.THREE_D,MovieFeature.DOLBY));
-//		registerMovieRequestDto.setLanguages(List.of(Language.MARATHI));
-//		registerMovieRequestDto.setActorID(List.of(1L));
-//		movieController.registerMovie(registerMovieRequestDto);
+		RegisterMovieRequestDto registerMovieRequestDto=new RegisterMovieRequestDto();
+		registerMovieRequestDto.setName("Sairat");
+		registerMovieRequestDto.setLength(180);
+		registerMovieRequestDto.setMovieFeatures(List.of(MovieFeature.THREE_D,MovieFeature.DOLBY));
+		registerMovieRequestDto.setLanguages(List.of(Language.MARATHI));
+		registerMovieRequestDto.setActorID(List.of(1L));
+		movieController.registerMovie(registerMovieRequestDto);
 
-//		CreateShowRequestDto showRequestDto=new CreateShowRequestDto();
-//		showRequestDto.setLanguage(Language.ENGLISH);
-//		showRequestDto.setMovieId(1L);
-//		showRequestDto.setEndTime(new Date());
-//		showRequestDto.setAudiId(1L);
-//		showRequestDto.setStartTime(new Date());
-//		HashMap<SeatType,Integer> showSeatPrice=new HashMap<>();
-//		showSeatPrice.put(SeatType.GOLD,300);
-//		showSeatPrice.put(SeatType.VIP,500);
-//		showSeatPrice.put(SeatType.SILVER,200);
-//		showRequestDto.setShowSeatPrice(showSeatPrice);
-//		this.showController.createShow(showRequestDto);
+		CreateShowRequestDto showRequestDto=new CreateShowRequestDto();
+		showRequestDto.setLanguage(Language.ENGLISH);
+		showRequestDto.setShowFeatures(List.of(ShowFeature.TWO_D,ShowFeature.DOLBY));
+		showRequestDto.setMovieId(1L);
+		showRequestDto.setEndTime(new Date());
+		showRequestDto.setAudiId(1L);
+		showRequestDto.setStartTime(new Date());
+		HashMap<SeatType,Integer> showSeatPrice=new HashMap<>();
+		showSeatPrice.put(SeatType.GOLD,300);
+		showSeatPrice.put(SeatType.VIP,500);
+		showSeatPrice.put(SeatType.SILVER,200);
+		showRequestDto.setShowSeatPrice(showSeatPrice);
+		showRequestDto.setShowSeatType(List.of(1L,2L));
+		this.showController.createShow(showRequestDto);
 
 //		BookTicketRequestDto bookTicketRequestDto=new BookTicketRequestDto();
 //		bookTicketRequestDto.setShowId(1L);

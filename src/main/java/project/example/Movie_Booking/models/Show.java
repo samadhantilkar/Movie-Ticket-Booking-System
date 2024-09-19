@@ -35,7 +35,7 @@ public class Show extends BaseModel{
 //    1:M
 //    1:1
     @OneToMany
-    private List<ShowSeatType> showSeatTypes=new ArrayList<>();
+    private List<ShowSeatType> showSeatTypes;
 
     @Enumerated(EnumType.STRING)
     private Language language;

@@ -6,15 +6,9 @@ import project.example.Movie_Booking.dtos.CreateShowRequestDto;
 import project.example.Movie_Booking.dtos.CreateShowResponseDto;
 import project.example.Movie_Booking.dtos.ResponseDtoStatus;
 import project.example.Movie_Booking.models.*;
-import project.example.Movie_Booking.repositories.AuditoriumRepository;
-import project.example.Movie_Booking.repositories.ShowRepository;
-import project.example.Movie_Booking.repositories.ShowSeatRepository;
-import project.example.Movie_Booking.repositories.ShowSeatTypeRepository;
+import project.example.Movie_Booking.repositories.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ShowService {
@@ -22,13 +16,16 @@ public class ShowService {
     private AuditoriumRepository auditoriumRepository;
     private ShowSeatRepository showSeatRepository;
     private ShowSeatTypeRepository showSeatTypeRepository;
+    private MovieRepository movieRepository;
     @Autowired
     ShowService(ShowRepository showRepository, AuditoriumRepository auditoriumRepository,
-                ShowSeatRepository showSeatRepository, ShowSeatTypeRepository showSeatTypeRepository){
+                ShowSeatRepository showSeatRepository, ShowSeatTypeRepository showSeatTypeRepository,
+                MovieRepository movieRepository){
         this.showRepository=showRepository;
         this.auditoriumRepository=auditoriumRepository;
         this.showSeatRepository=showSeatRepository;
         this.showSeatTypeRepository=showSeatTypeRepository;
+        this.movieRepository=movieRepository;
     }
     public CreateShowResponseDto createShow(CreateShowRequestDto requestDto)
     {
@@ -36,6 +33,11 @@ public class ShowService {
         show.setStartTime(requestDto.getStartTime());
         show.setEndTime(requestDto.getEndTime());
         show.setLanguage(requestDto.getLanguage());
+        show.setShowFeatures(requestDto.getShowFeatures());
+
+        Optional<Movie> optionalMovie=movieRepository.findById(requestDto.getMovieId());
+        Movie movie=optionalMovie.get();
+        show.setMovie(movie);
 
         Auditorium auditorium=auditoriumRepository.findById(requestDto.getAudiId()).get();
         show.setAuditorium(auditorium);
@@ -51,14 +53,20 @@ public class ShowService {
         }
 
         savedShow.setShowSeats(savedShowSeat);
-
-        for(ShowSeatType seatType: savedShow.getShowSeatTypes()){
-            int price=requestDto.getShowSeatPrice().get(seatType.getSeatType());
+        List<ShowSeatType> showSeatTypes=new ArrayList<>();
+        for(Map.Entry<SeatType,Integer> entry:requestDto.getShowSeatPrice().entrySet()){
             ShowSeatType showSeatType=new ShowSeatType();
-            showSeatType.setSeatType(seatType.getSeatType());
-            showSeatType.setShow(seatType.getShow());
-            showSeatTypeRepository.save(showSeatType);
+            showSeatType.setSeatType(entry.getKey());
+            showSeatType.setPrice(entry.getValue());
+            showSeatType.setShow(savedShow);
+            showSeatTypes.add(this.showSeatTypeRepository.save(showSeatType));
         }
+        savedShow.setShowSeatTypes(showSeatTypes);
+        showRepository.save(savedShow);
+
+
+
+
         CreateShowResponseDto responseDto=new CreateShowResponseDto();
         responseDto.setStatus(ResponseDtoStatus.SUCCESS);
         return responseDto;

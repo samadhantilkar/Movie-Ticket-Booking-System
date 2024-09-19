@@ -17,15 +17,17 @@ public class ShowService {
     private ShowSeatRepository showSeatRepository;
     private ShowSeatTypeRepository showSeatTypeRepository;
     private MovieRepository movieRepository;
+    private TheatreRepository theatreRepository;
     @Autowired
     ShowService(ShowRepository showRepository, AuditoriumRepository auditoriumRepository,
                 ShowSeatRepository showSeatRepository, ShowSeatTypeRepository showSeatTypeRepository,
-                MovieRepository movieRepository){
+                MovieRepository movieRepository,TheatreRepository theatreRepository){
         this.showRepository=showRepository;
         this.auditoriumRepository=auditoriumRepository;
         this.showSeatRepository=showSeatRepository;
         this.showSeatTypeRepository=showSeatTypeRepository;
         this.movieRepository=movieRepository;
+        this.theatreRepository=theatreRepository;
     }
     public CreateShowResponseDto createShow(CreateShowRequestDto requestDto)
     {
@@ -43,6 +45,11 @@ public class ShowService {
         show.setAuditorium(auditorium);
 
         Show savedShow=showRepository.save(show);
+
+        Theatre theatre=auditorium.getTheatre();
+        theatre.setUpcomingShows(List.of(savedShow));
+        theatreRepository.save(theatre);
+
         List<ShowSeat> savedShowSeat=new ArrayList<>();
         for(Seat seat:auditorium.getSeats()){
             ShowSeat showSeat=new ShowSeat();

@@ -1,6 +1,3 @@
-Certainly! Here's a README.md file for your Movie Booking project:
-
-```markdown:README.md
 # Movie Booking System
 
 ## Description
@@ -82,15 +79,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 This project is open source and available under the [MIT License](LICENSE).
 
 ## Contact
-For any queries, please contact [Your Name] at [your.email@example.com].
-```
-
-This README provides a comprehensive overview of your project, including its features, structure, setup instructions, and API endpoints. You may want to customize it further based on your specific project details, such as:
-
-1. Adding more detailed installation instructions if there are any specific requirements.
-2. Updating the contact information and license details.
-3. Adding information about any configuration that might be necessary (e.g., database setup).
-4. Including information about how to run tests, if you have a test suite.
-5. Adding badges for build status, code coverage, or other relevant metrics.
-
-Remember to place this README.md file in the root directory of your project. This will help anyone who accesses your repository to understand what the project is about and how to set it up and use it.
+For any queries, please contact [MustafaPinjari] at [unlessuser99@gmail.com].

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Booking System</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+    <header>
+        <h1>Movie Booking System</h1>
+    </header>
+
+    <main>
+        <section id="movies">
+            <h2>Now Showing</h2>
+            <div id="movie-list"></div>
+        </section>
+        <section id="booking">
+            <h2>Book Tickets</h2>
+            <form id="booking-form">
+                <label for="movie-select">Select Movie:</label>
+                <select id="movie-select" required></select>
+
+                <label for="show-select">Select Show:</label>
+                <select id="show-select" required></select>
+
+                <label for="seat-select">Select Seats:</label>
+                <div id="seat-select"></div>
+
+                <button type="submit">Book Tickets</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Movie Booking System. All rights reserved.</p>
+    </footer>
+
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

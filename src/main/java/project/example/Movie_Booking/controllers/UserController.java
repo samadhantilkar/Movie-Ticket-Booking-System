@@ -3,6 +3,8 @@ package project.example.Movie_Booking.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
+import project.example.Movie_Booking.dtos.MoneyRequestDto;
+import project.example.Movie_Booking.dtos.MoneyResponseDto;
 import project.example.Movie_Booking.dtos.RegisterUserRequestDto;
 import project.example.Movie_Booking.dtos.RegisterUserResponseDto;
 import project.example.Movie_Booking.models.User;
@@ -27,4 +29,9 @@ public class UserController {
         RegisterUserResponseDto response=new RegisterUserResponseDto();
         return response;
     }
+
+    public MoneyResponseDto addMoney(MoneyRequestDto moneyRequestDto){
+        return userService.addMoney(moneyRequestDto);
+    }
+
 }

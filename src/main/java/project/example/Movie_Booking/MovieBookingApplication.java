@@ -58,6 +58,11 @@ public class MovieBookingApplication implements CommandLineRunner {
 		userRequestDto.setEmail("samadhantilkar@gmail.com");
 		this.userController.registerUser(userRequestDto);
 
+		MoneyRequestDto moneyRequestDto=new MoneyRequestDto();
+		moneyRequestDto.setAmount(2000.66D);
+		moneyRequestDto.setId(1L);
+		userController.addMoney(moneyRequestDto);
+
 		RegisterCityRequestDto registerCityRequestDto=new RegisterCityRequestDto();
 		registerCityRequestDto.setName("Nashik");
 		this.cityController.addCity(registerCityRequestDto);
@@ -111,17 +116,19 @@ public class MovieBookingApplication implements CommandLineRunner {
 		showRequestDto.setShowSeatType(List.of(1L,2L));
 		this.showController.createShow(showRequestDto);
 
-//		BookTicketRequestDto bookTicketRequestDto=new BookTicketRequestDto();
-//		bookTicketRequestDto.setShowId(1L);
-//		bookTicketRequestDto.setUserId(1L);
+		BookTicketRequestDto bookTicketRequestDto=new BookTicketRequestDto();
+		bookTicketRequestDto.setShowId(1L);
+		bookTicketRequestDto.setUserId(1L);
 //		bookTicketRequestDto.setShowSeatIds(List.of(1L,2L,3L));
-//		bookTicketRequestDto.setShowSeatIds(List.of(3L,4L,5L));
-//		TicketBookRunner user1=new TicketBookRunner(this.ticketController,bookTicketRequestDto);
+		bookTicketRequestDto.setShowSeatIds(List.of(34L,41L,11L));
+		TicketBookRunner user1=new TicketBookRunner(this.ticketController,bookTicketRequestDto);
+//		BookTicketRequestDto bookTicketRequestDto1=new BookTicketRequestDto();
+//		bookTicketRequestDto1.setShowSeatIds(List);
 //		TicketBookRunner user2=new TicketBookRunner(this.ticketController,1L,List.of(4L,5L,6L),1L);
 
-//		Thread t1=new Thread(user1);
+		Thread t1=new Thread(user1);
 //		Thread t2=new Thread(user2);
-//		t1.start();
+		t1.start();
 //		t2.start();
 	}
 }

@@ -2,22 +2,20 @@ package project.example.Movie_Booking.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 import project.example.Movie_Booking.dtos.*;
-import project.example.Movie_Booking.models.Ticket;
-import project.example.Movie_Booking.models.User;
-import project.example.Movie_Booking.services.PaymentServices;
+import project.example.Movie_Booking.models.PaymentMethod;
+import project.example.Movie_Booking.services.Adapter.PaymentServices;
 import project.example.Movie_Booking.services.TicketService;
 
-import java.util.List;
+import java.util.Date;
+import java.util.Scanner;
+
 @Controller
 public class TicketController {
 
     private TicketService ticketService;
-    private final PaymentServices paymentServices;
-
+    private PaymentServices paymentServices;
+    private static Scanner scanner=new Scanner(System.in);
     @Autowired
     public TicketController(TicketService ticketService,PaymentServices paymentServices){
         this.ticketService=ticketService;
@@ -27,17 +25,11 @@ public class TicketController {
     public BookTicketResponseDto bookTicket(BookTicketRequestDto bookTicketRequestDto) throws Exception
     {
         BookTicketResponseDto bookTicketResponseDto=ticketService.bookTicket(bookTicketRequestDto);
-        if(bookTicketResponseDto.getStatus().equals(ResponseDtoStatus.PENDING)){
-            MoneyRequestDto moneyRequestDto=new MoneyRequestDto();
-            moneyRequestDto.setShowSeatIds(bookTicketRequestDto.getShowSeatIds());
-            moneyRequestDto.setId(bookTicketRequestDto.getUserId());
-            moneyRequestDto.setAmount(bookTicketResponseDto.getAmount());
-            MoneyResponseDto moneyResponseDto= paymentServices.makePayment(moneyRequestDto);
-            if(moneyResponseDto.getStatus().equals(ResponseDtoStatus.SUCCESS)){
-                return bookTicketResponseDto;
-            }
-        }
-        bookTicketResponseDto.setStatus(ResponseDtoStatus.FAILURE);
+
         return bookTicketResponseDto;
+    }
+
+    public TicketResponseDto conformTicket(BookTicketRequestDto bookTicketRequestDto,PaymentResponseDto paymentResponseDto){
+        return ticketService.conformTicket(bookTicketRequestDto,paymentResponseDto);
     }
 }

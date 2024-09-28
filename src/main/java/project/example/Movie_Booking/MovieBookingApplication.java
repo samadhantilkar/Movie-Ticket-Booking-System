@@ -8,11 +8,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import project.example.Movie_Booking.controllers.*;
 import project.example.Movie_Booking.dtos.*;
 import project.example.Movie_Booking.models.*;
+import project.example.Movie_Booking.services.Adapter.PaymentServices;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @SpringBootApplication
 @EnableJpaAuditing
@@ -27,16 +25,14 @@ public class MovieBookingApplication implements CommandLineRunner {
 	private ShowController showController;
 	private ActorController actorController;
 	private MovieController movieController;
+	private PaymentController paymentController;
 	@Autowired
-	public MovieBookingApplication(UserController userController,
-								   CityController cityController,
-								   TheatreController theatreController,
-								   AuditoriumController auditoriumController,
-								   SeatController seatController,
-								   TicketController ticketController,
-								   ShowController showController,
-								   ActorController actorController,
-								   MovieController movieController){
+	public MovieBookingApplication(UserController userController, CityController cityController,
+								   TheatreController theatreController, AuditoriumController auditoriumController,
+								   SeatController seatController, TicketController ticketController,
+								   ShowController showController, ActorController actorController,
+								   MovieController movieController, PaymentController paymentController){
+		this.paymentController=paymentController;
 		this.movieController=movieController;
 		this.userController=userController;
 		this.cityController=cityController;
@@ -58,15 +54,9 @@ public class MovieBookingApplication implements CommandLineRunner {
 		userRequestDto.setEmail("samadhantilkar@gmail.com");
 		this.userController.registerUser(userRequestDto);
 
-		MoneyRequestDto moneyRequestDto=new MoneyRequestDto();
-		moneyRequestDto.setAmount(2000.66D);
-		moneyRequestDto.setId(1L);
-		userController.addMoney(moneyRequestDto);
-
 		RegisterCityRequestDto registerCityRequestDto=new RegisterCityRequestDto();
 		registerCityRequestDto.setName("Nashik");
 		this.cityController.addCity(registerCityRequestDto);
-
 
 		RegisterTheatreRequestDto registerTheatreRequestDto=new RegisterTheatreRequestDto();
 		registerTheatreRequestDto.setName("PVR");
@@ -121,7 +111,7 @@ public class MovieBookingApplication implements CommandLineRunner {
 		bookTicketRequestDto.setUserId(1L);
 //		bookTicketRequestDto.setShowSeatIds(List.of(1L,2L,3L));
 		bookTicketRequestDto.setShowSeatIds(List.of(34L,41L,11L));
-		TicketBookRunner user1=new TicketBookRunner(this.ticketController,bookTicketRequestDto);
+		TicketBookRunner user1=new TicketBookRunner(this.ticketController,paymentController,bookTicketRequestDto);
 //		BookTicketRequestDto bookTicketRequestDto1=new BookTicketRequestDto();
 //		bookTicketRequestDto1.setShowSeatIds(List);
 //		TicketBookRunner user2=new TicketBookRunner(this.ticketController,1L,List.of(4L,5L,6L),1L);
@@ -130,5 +120,20 @@ public class MovieBookingApplication implements CommandLineRunner {
 //		Thread t2=new Thread(user2);
 		t1.start();
 //		t2.start();
+
+//		PaymentRequestDto paymentRequestDto =new PaymentRequestDto();
+//		paymentRequestDto.setShowId(1L);
+//		paymentRequestDto.setAmount(1100D);
+//		paymentRequestDto.setPaymentMethod(PaymentMethod.DEBIT_CARD);
+//		paymentRequestDto.setCardNumber("321213124325");
+//		Date date = new Date();
+//		Calendar calendar = Calendar.getInstance();
+//		calendar.setTime(date);
+//		calendar.add(Calendar.YEAR, 5);
+//		Date newDate = calendar.getTime();
+//		paymentRequestDto.setDate(newDate);
+//		paymentRequestDto.setCvv(4123);
+//		PaymentResponseDto paymentResponseDto=paymentController.makePayment(paymentRequestDto);
+//		System.out.println(paymentResponseDto.getStatus());
 	}
 }

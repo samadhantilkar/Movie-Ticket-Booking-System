@@ -3,9 +3,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional; // Keep this
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.stereotype.Service;
-import project.example.Movie_Booking.dtos.BookTicketRequestDto;
-import project.example.Movie_Booking.dtos.BookTicketResponseDto;
-import project.example.Movie_Booking.dtos.ResponseDtoStatus;
+import project.example.Movie_Booking.dtos.*;
 import project.example.Movie_Booking.exceptions.ShowNotFound;
 import project.example.Movie_Booking.exceptions.ShowSeatNotAvailableException;
 import project.example.Movie_Booking.models.*;
@@ -19,15 +17,15 @@ public class TicketService {
     private final ShowSeatRepository showSeatRepository;
     private final UserRepository userRepository;
     private final ShowRepository showRepository;
-    private final TicketReposity ticketReposity;
+    private final TicketRepository ticketRepository;
     @Autowired
     TicketService(ShowSeatRepository showSeatRepository, UserRepository userRepository,
-                  ShowRepository showRepository,TicketReposity ticketReposity,
+                  ShowRepository showRepository, TicketRepository ticketRepository,
                   ShowSeatTypeRepository showSeatTypeRepository){
         this.showSeatRepository=showSeatRepository;
         this.userRepository=userRepository;
         this.showRepository=showRepository;
-        this.ticketReposity=ticketReposity;
+        this.ticketRepository = ticketRepository;
     }
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public BookTicketResponseDto bookTicket(BookTicketRequestDto requestDto) throws Exception
@@ -73,12 +71,38 @@ public class TicketService {
         ticket.setShow(show.get());
         ticket.setShowSeats(showSeats);
         ticket.setTotalAmount(amount);
-        Ticket savedTicket=ticketReposity.save(ticket);
+        Ticket savedTicket= ticketRepository.save(ticket);
 
         BookTicketResponseDto bookTicketResponseDto=new BookTicketResponseDto();
         bookTicketResponseDto.setStatus(ResponseDtoStatus.PENDING);
         bookTicketResponseDto.setAmount(amount);
         bookTicketResponseDto.setUserID(requestDto.getUserId());
+        bookTicketResponseDto.setShowSeats(showSeats);
         return bookTicketResponseDto;
+    }
+
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public TicketResponseDto conformTicket(BookTicketRequestDto bookTicketRequestDto, PaymentResponseDto paymentResponseDto){
+
+//    Get The All ShowSeat
+        List<ShowSeat> showSeatList= showSeatRepository.findByIdIn(List.of(bookTicketRequestDto.getShowId()));
+
+//    Make The Booked
+        for(ShowSeat showSeat:showSeatList){
+            Optional<ShowSeat> seat=showSeatRepository.findById(showSeat.getId());
+            seat.get().setShowSeatState(ShowSeatState.BOOKED);
+            showSeatRepository.save(seat.get());
+        }
+
+//        Create The TicketResponse Dto
+        TicketResponseDto ticketResponseDto=new TicketResponseDto();
+        Optional<Show> show=showRepository.findById(bookTicketRequestDto.getShowId());
+        ticketResponseDto.setAmount(paymentResponseDto.getAmount());
+        ticketResponseDto.setShowSeatTypes(showSeatList);
+        ticketResponseDto.setMovieName(show.get().getMovie().getName());
+        ticketResponseDto.setTime(show.get().getStartTime());
+        ticketResponseDto.setTheatreName(show.get().getAuditorium().getTheatre().getName());
+
+        return ticketResponseDto;
     }
 }

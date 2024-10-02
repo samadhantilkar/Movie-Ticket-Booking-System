@@ -16,9 +16,9 @@ public class RazorpayPaymentGatewayAdapter implements PaymentGateway{
     }
 
     @Override
-    public Long payMoney(PaymentMethod paymentMethod, Double amount, String cardNumber, int cvv, Date date) {
+    public String payMoney(PaymentMethod paymentMethod, Double amount, String cardNumber, int cvv, Date date) {
         String cvvString=String.valueOf(cvv);
-        Long ans= razorPayGateway.payMoney(amount,paymentMethod,cardNumber,cvvString,date);
+        String ans= razorPayGateway.payMoney(amount,paymentMethod,cardNumber,cvvString,date);
         return ans;
     }
 

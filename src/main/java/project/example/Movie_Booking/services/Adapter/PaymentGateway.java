@@ -7,6 +7,6 @@ import java.util.Date;
 
 @Component
 public interface PaymentGateway {
-    Long payMoney(PaymentMethod paymentMethod, Double amount, String cardNumber, int cvv, Date Date);
+    String payMoney(PaymentMethod paymentMethod, Double amount, String cardNumber,int cvv, Date Date);
     PaymentStatus getStatus(Long id);
 }

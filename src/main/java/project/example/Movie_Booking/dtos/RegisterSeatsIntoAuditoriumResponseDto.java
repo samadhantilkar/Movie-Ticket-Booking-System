@@ -1,13 +1,15 @@
 package project.example.Movie_Booking.dtos;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import project.example.Movie_Booking.models.Seat;
 
 import java.util.List;
 
 @Getter
 @Setter
-public class RegisterSeatsIntoAuditoriumResponseDto extends ResponseDto{
+@NoArgsConstructor
+@AllArgsConstructor // Add this to allow initialization with seats
+public class RegisterSeatsIntoAuditoriumResponseDto extends ResponseDto {
+    @NonNull
     private List<Seat> seats;
 }

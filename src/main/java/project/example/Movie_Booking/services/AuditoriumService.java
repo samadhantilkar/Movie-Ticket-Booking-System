@@ -2,54 +2,84 @@ package project.example.Movie_Booking.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+import project.example.Movie_Booking.exceptions.InvalideTheatreNameException;
 import project.example.Movie_Booking.dtos.RegisterAuditoriumRequestDto;
 import project.example.Movie_Booking.dtos.RegisterAuditoriumResponseDto;
 import project.example.Movie_Booking.dtos.ResponseDtoStatus;
-import project.example.Movie_Booking.exceptions.InvalidCityId;
-import project.example.Movie_Booking.exceptions.TheatreNotFound;
+import project.example.Movie_Booking.exceptions.InvalidCityNameException;
 import project.example.Movie_Booking.models.Auditorium;
 import project.example.Movie_Booking.models.City;
 import project.example.Movie_Booking.models.Theatre;
 import project.example.Movie_Booking.repositories.AuditoriumRepository;
+import project.example.Movie_Booking.repositories.CityRepository;
 import project.example.Movie_Booking.repositories.TheatreRepository;
 
-import java.util.Optional;
+import java.util.List;
+
 @Service
 public class AuditoriumService {
 
-    AuditoriumRepository auditoriumRepository;
-    TheatreRepository theatreRepository;
+    private final AuditoriumRepository auditoriumRepository;
+    private final TheatreRepository theatreRepository;
+    private final CityRepository cityRepository;
+
     @Autowired
-    public AuditoriumService(AuditoriumRepository auditoriumRepository,
-                             TheatreRepository theatreRepository){
-        this.auditoriumRepository=auditoriumRepository;
-        this.theatreRepository=theatreRepository;
+    public AuditoriumService(AuditoriumRepository auditoriumRepository, TheatreRepository theatreRepository,
+                             CityRepository cityRepository) {
+        this.auditoriumRepository = auditoriumRepository;
+        this.theatreRepository = theatreRepository;
+        this.cityRepository = cityRepository;
     }
 
-    public RegisterAuditoriumResponseDto addAuditorium(RegisterAuditoriumRequestDto requestDto) throws TheatreNotFound {
-//        Fetch The Theatre
-        Optional<Theatre> optionalTheatre=theatreRepository.findById(requestDto.getTheatreId());
-        if(!optionalTheatre.isPresent()){
-            throw new TheatreNotFound("Invlide Theatre Id");
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
+    public RegisterAuditoriumResponseDto addAuditorium(RegisterAuditoriumRequestDto requestDto) throws Exception {
+
+        City city = findCityByName(requestDto.getCityName());
+        Theatre theatre = findTheatreInCity(city, requestDto.getTheatreName());
+
+        Auditorium savedAuditorium = createAndSaveAuditorium(requestDto, theatre);
+
+        addAuditoriumToTheatre(savedAuditorium, theatre);
+
+        return createSuccessResponse();
+    }
+
+    private City findCityByName(String cityName) throws InvalidCityNameException {
+        List<City> cityList = cityRepository.findByName(cityName);
+        if (cityList.isEmpty()) {
+            throw new InvalidCityNameException("City with name '" + cityName + "' not found");
         }
-//        Create Auditorium
-        Auditorium auditorium=new Auditorium();
+        return cityList.get(0);
+    }
+
+    private Theatre findTheatreInCity(City city, String theatreName) throws InvalideTheatreNameException {
+        for(Theatre theatre:city.getTheatres()){
+            if(theatre.getName().equals(theatreName)){
+                return theatre;
+            }
+        }
+        throw new InvalideTheatreNameException("Theatre with name '" + theatreName + "' not found in city '" + city.getName() + "'");
+    }
+
+    private Auditorium createAndSaveAuditorium(RegisterAuditoriumRequestDto requestDto, Theatre theatre) {
+        Auditorium auditorium = new Auditorium();
         auditorium.setName(requestDto.getName());
         auditorium.setCapacity(requestDto.getCapacity());
-        auditorium.setTheatre(optionalTheatre.get());
+        auditorium.setTheatre(theatre);
         auditorium.setAuditoriumFeatures(requestDto.getAuditoriumFeatures());
 
-//        Save Auditorium
-        Auditorium savedAuditorium=auditoriumRepository.save(auditorium);
+        return auditoriumRepository.save(auditorium);
+    }
 
-        Theatre dbTheatre=optionalTheatre.get();
+    private void addAuditoriumToTheatre(Auditorium auditorium, Theatre theatre) {
+        theatre.getAuditoriums().add(auditorium);
+        theatreRepository.save(theatre);
+    }
 
-//        Save The Auditorium in Theatre
-        dbTheatre.getAuditoriums().add(savedAuditorium);
-
-//        Save in db
-        this.theatreRepository.save(dbTheatre);
-        RegisterAuditoriumResponseDto responseDto=new RegisterAuditoriumResponseDto();
+    private RegisterAuditoriumResponseDto createSuccessResponse() {
+        RegisterAuditoriumResponseDto responseDto = new RegisterAuditoriumResponseDto();
         responseDto.setStatus(ResponseDtoStatus.SUCCESS);
         return responseDto;
     }

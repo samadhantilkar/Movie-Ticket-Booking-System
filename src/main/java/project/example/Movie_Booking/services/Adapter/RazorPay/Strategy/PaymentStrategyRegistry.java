@@ -3,20 +3,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import project.example.Movie_Booking.models.PaymentMethod;
 import java.util.HashMap;
-@Component
+@Component("payumoneyStrategyRegistry")
 public class PaymentStrategyRegistry {
-    private HashMap<PaymentMethod,PaymentStrategy> strategy=new HashMap<>();
+    private HashMap<PaymentMethod, RazorPayPaymentStrategy> strategy=new HashMap<>();
     @Autowired
-    public PaymentStrategyRegistry(CreditCardPayment creditCardPayment, DebitCardPayment debitCardPayment) {
-        strategy.put(PaymentMethod.CREDIT_CARD,creditCardPayment);
-        strategy.put(PaymentMethod.DEBIT_CARD,debitCardPayment);
+    public PaymentStrategyRegistry(RazorPayCreditCardRazorPayPayment razorPayCreditCardPayment, RazorPayDebitCardRazorPayPayment razorPayDebitCardPayment) {
+        strategy.put(PaymentMethod.CREDIT_CARD, razorPayCreditCardPayment);
+        strategy.put(PaymentMethod.DEBIT_CARD, razorPayDebitCardPayment);
     }
 
-    public void Register(PaymentMethod paymentMode,PaymentStrategy paymentStrategy){
-        strategy.put(paymentMode,paymentStrategy);
+    public void Register(PaymentMethod paymentMode, RazorPayPaymentStrategy razorPayPaymentStrategy){
+        strategy.put(paymentMode, razorPayPaymentStrategy);
     }
 
-    public PaymentStrategy get(PaymentMethod paymentMode){
+    public RazorPayPaymentStrategy get(PaymentMethod paymentMode){
         return strategy.get(paymentMode);
     }
 }

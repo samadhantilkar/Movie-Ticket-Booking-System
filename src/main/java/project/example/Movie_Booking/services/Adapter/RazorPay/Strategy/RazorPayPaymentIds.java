@@ -1,14 +1,13 @@
-package project.example.Movie_Booking.services.Adapter;
+package project.example.Movie_Booking.services.Adapter.RazorPay.Strategy;
 
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
-import java.util.Set;
 
 @Component
 @Data
-public class PaymentIds {
+public class RazorPayPaymentIds {
     private HashSet<Long> generatedNumbers = new HashSet<>();
 
     public boolean getGeneratedNumbers(Long number) {

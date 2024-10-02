@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import project.example.Movie_Booking.dtos.RegisterActorRequestDto;
 import project.example.Movie_Booking.dtos.RegisterMovieRequestDto;
 import project.example.Movie_Booking.dtos.RegisterMovieResponseDto;
+import project.example.Movie_Booking.dtos.ResponseDtoStatus;
 import project.example.Movie_Booking.services.MovieServices;
 
 @Controller
@@ -16,6 +17,13 @@ public class MovieController {
     }
 
     public RegisterMovieResponseDto registerMovie(RegisterMovieRequestDto requestDto){
-        return movieServices.registerMovie(requestDto);
+        try {
+            return movieServices.registerMovie(requestDto);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            RegisterMovieResponseDto responseDto=new RegisterMovieResponseDto();
+            responseDto.setStatus(ResponseDtoStatus.FAILURE);
+            return responseDto;
+        }
     }
 }

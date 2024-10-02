@@ -1,16 +1,25 @@
 package project.example.Movie_Booking.dtos;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import project.example.Movie_Booking.models.AuditoriumFeature;
 
 import java.util.List;
 
 @Setter
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class RegisterAuditoriumRequestDto {
+    @NonNull
     private String name;
+
     private int capacity;
-    private Long theatreId;
+
+    @NonNull
+    private String theatreName;
+
+    @NonNull
+    private String cityName;
+
     private List<AuditoriumFeature> auditoriumFeatures;
 }

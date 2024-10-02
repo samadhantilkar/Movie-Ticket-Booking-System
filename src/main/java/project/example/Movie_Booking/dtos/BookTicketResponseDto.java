@@ -1,16 +1,18 @@
 package project.example.Movie_Booking.dtos;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import project.example.Movie_Booking.models.ShowSeat;
-import project.example.Movie_Booking.models.User;
-
 import java.util.List;
 
 @Getter
 @Setter
-public class BookTicketResponseDto extends ResponseDto{
-    Long userID;
-    Double amount;
-    List<ShowSeat> showSeats;
+@NoArgsConstructor
+@RequiredArgsConstructor
+public class BookTicketResponseDto extends ResponseDto {
+    @NonNull
+    private Long userID;
+    @NonNull
+    private Double amount;
+    @NonNull
+    private List<ShowSeat> showSeats;
 }

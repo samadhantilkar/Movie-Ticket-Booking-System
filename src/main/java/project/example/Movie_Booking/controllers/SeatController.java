@@ -4,24 +4,45 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import project.example.Movie_Booking.dtos.RegisterSeatsIntoAuditoriumRequestDto;
 import project.example.Movie_Booking.dtos.RegisterSeatsIntoAuditoriumResponseDto;
-import project.example.Movie_Booking.models.Seat;
-import project.example.Movie_Booking.models.SeatType;
+import project.example.Movie_Booking.dtos.ResponseDtoStatus;
 import project.example.Movie_Booking.services.SeatService;
-
-import java.util.List;
-import java.util.Map;
 
 @Controller
 public class SeatController {
 
-    SeatService seatService;
+    private final SeatService seatService;
+
+
     @Autowired
-    public SeatController(SeatService service){
-        this.seatService=service;
+    public SeatController(SeatService seatService) {
+        this.seatService = seatService;
     }
-//    Map<SeatType,Integer> seatTypePrice
-    public RegisterSeatsIntoAuditoriumResponseDto createSeats(RegisterSeatsIntoAuditoriumRequestDto requestDto) throws Exception
-    {
-        return seatService.createSeats(requestDto);
+
+    public RegisterSeatsIntoAuditoriumResponseDto createSeats(RegisterSeatsIntoAuditoriumRequestDto requestDto) {
+        try {
+            validateCreateSeats(requestDto);
+            return seatService.createSeats(requestDto);
+        } catch (Exception e) {
+            System.out.println("Error creating seats: {}"+ e.getMessage());
+            RegisterSeatsIntoAuditoriumResponseDto responseDto = new RegisterSeatsIntoAuditoriumResponseDto();
+            responseDto.setStatus(ResponseDtoStatus.FAILURE);
+            return responseDto;
+        }
+    }
+
+
+    // Validation logic for seat creation
+    private void validateCreateSeats(RegisterSeatsIntoAuditoriumRequestDto requestDto) throws Exception {
+        validateField(requestDto.getCityName(), "Empty City Name");
+        validateField(requestDto.getTheatreName(), "Empty Theatre Name");
+        validateField(requestDto.getAuditoriumName(), "Empty Auditorium Name");
+    }
+
+
+    // Utility method for field validation
+    private void validateField(String field, String errorMessage) throws Exception {
+        if (field.replaceAll("\\s", "").isEmpty()) {
+            throw new IllegalArgumentException(errorMessage);
+        }
     }
 }

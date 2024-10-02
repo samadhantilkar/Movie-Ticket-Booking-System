@@ -9,5 +9,5 @@ import java.util.List;
 @Service
 public interface ActorRepositories extends JpaRepository<Actor,Long> {
 
-
+    List<Actor> findByName(String name);
 }

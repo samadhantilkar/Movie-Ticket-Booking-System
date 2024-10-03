@@ -13,4 +13,5 @@ public class BookTicketRequestDto {
     private List<Long> showSeatIds;  // Add private access modifier
     @NonNull
     private Long userId;
+    private Long ticketId;
 }

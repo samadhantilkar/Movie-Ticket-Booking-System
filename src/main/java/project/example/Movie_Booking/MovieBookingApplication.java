@@ -132,7 +132,7 @@ public class MovieBookingApplication implements CommandLineRunner {
 		bookTicketRequestDto.setShowId(1L);
 		bookTicketRequestDto.setUserId(1L);
 		bookTicketRequestDto.setShowSeatIds(List.of(34L,41L,11L));
-		TicketBookRunner user1=new TicketBookRunner(this.ticketController,paymentController,bookTicketRequestDto);
+		TicketBookRunner user1=new TicketBookRunner(this.ticketController,paymentController,bookTicketRequestDto,seatController);
 //
 		Thread t1=new Thread(user1);
 //		Thread t2=new Thread(user2);

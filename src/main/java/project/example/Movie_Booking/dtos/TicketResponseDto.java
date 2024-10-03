@@ -27,4 +27,6 @@ public class TicketResponseDto extends ResponseDto{
    @NotBlank(message = "Theatre name cannot be blank")
    private String theatreName;
 
+   private Long ticketId;
+
 }

@@ -1,6 +1,9 @@
 package project.example.Movie_Booking;
 
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import project.example.Movie_Booking.controllers.PaymentController;
+import project.example.Movie_Booking.controllers.SeatController;
 import project.example.Movie_Booking.controllers.TicketController;
 import project.example.Movie_Booking.dtos.*;
 import project.example.Movie_Booking.models.PaymentMethod;
@@ -14,12 +17,14 @@ public class TicketBookRunner implements Runnable {
     private final TicketController ticketController;
     private final PaymentController paymentController;
     private final BookTicketRequestDto requestDto;
+    private final SeatController seatController;
     private static final Scanner scanner = new Scanner(System.in);
 
     // Constructor initializes required controllers and request DTO
     public TicketBookRunner(TicketController ticketController, PaymentController paymentController,
-                            BookTicketRequestDto requestDto) {
+                            BookTicketRequestDto requestDto,SeatController seatController) {
         this.ticketController = ticketController;
+        this.seatController=seatController;
         this.paymentController = paymentController;
         this.requestDto = requestDto;
     }
@@ -31,26 +36,26 @@ public class TicketBookRunner implements Runnable {
             BookTicketResponseDto bookTicketResponseDto = ticketController.bookTicket(requestDto);
 
             // Step 2: If the ticket is pending, proceed with payment
-            if (bookTicketResponseDto.getStatus() == ResponseDtoStatus.PENDING) {
+            if (bookTicketResponseDto.getStatus() .equals(ResponseDtoStatus.PENDING)) {
                 PaymentRequestDto paymentRequestDto = createPaymentRequest(bookTicketResponseDto);
 
                 // Step 3: Make the payment
                 PaymentResponseDto paymentResponseDto = paymentController.makePayment(paymentRequestDto);
 
                 // Step 4: If payment is successful, confirm the ticket
-                if (paymentResponseDto.getStatus() == ResponseDtoStatus.SUCCESS) {
-                    TicketResponseDto ticketResponseDto = ticketController.confirmTicket(requestDto, paymentResponseDto);
+                if (paymentResponseDto.getStatus().equals(ResponseDtoStatus.SUCCESS)) {
+                    TicketResponseDto ticketResponseDto = ticketController.confirmTicket(bookTicketResponseDto, paymentResponseDto);
 
                     // Step 5: If ticket confirmation is successful, print ticket details
-                    if (ticketResponseDto.getStatus() == ResponseDtoStatus.SUCCESS) {
+                    if (ticketResponseDto.getStatus().equals(ResponseDtoStatus.SUCCESS)) {
                         printTicketDetails(ticketResponseDto, bookTicketResponseDto);
                     } else {
                         // If ticket confirmation fails, make the seats available again
-                        ticketController.makeSeatAvailable(bookTicketResponseDto);
+                        seatController.makeSeatAvailable(bookTicketResponseDto);
                     }
                 } else {
                     // If payment fails, make the seats available again
-                    ticketController.makeSeatAvailable(bookTicketResponseDto);
+                    seatController.makeSeatAvailable(bookTicketResponseDto);
                 }
             }
         } catch (Exception e) {

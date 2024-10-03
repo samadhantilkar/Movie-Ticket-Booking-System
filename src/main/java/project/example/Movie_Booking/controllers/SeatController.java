@@ -2,6 +2,7 @@ package project.example.Movie_Booking.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import project.example.Movie_Booking.dtos.BookTicketResponseDto;
 import project.example.Movie_Booking.dtos.RegisterSeatsIntoAuditoriumRequestDto;
 import project.example.Movie_Booking.dtos.RegisterSeatsIntoAuditoriumResponseDto;
 import project.example.Movie_Booking.dtos.ResponseDtoStatus;
@@ -27,6 +28,14 @@ public class SeatController {
             RegisterSeatsIntoAuditoriumResponseDto responseDto = new RegisterSeatsIntoAuditoriumResponseDto();
             responseDto.setStatus(ResponseDtoStatus.FAILURE);
             return responseDto;
+        }
+    }
+
+    public void makeSeatAvailable(BookTicketResponseDto bookTicketResponseDto){
+        try {
+            seatService.makeSeatAvailable(bookTicketResponseDto);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
         }
     }
 

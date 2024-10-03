@@ -37,6 +37,7 @@ public class PaymentServices {
               paymentRequestDto.getCvv(),paymentRequestDto.getDate());
         Payment payment=modelMapper.map(paymentRequestDto,Payment.class);
         payment.setPaymentStatus(PaymentStatus.SUCCESS);
+        payment.setTimeOfPayment(new Date());
         Payment savedPayment=paymentRepository.save(payment);
 
         PaymentResponseDto paymentResponseDto = new PaymentResponseDto();

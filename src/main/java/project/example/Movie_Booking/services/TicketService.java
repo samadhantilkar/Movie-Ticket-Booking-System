@@ -57,7 +57,7 @@ public class TicketService {
         Ticket ticket = createTicket(requestDto, show, showSeats, totalAmount);
 
         // Build response DTO
-        return buildBookTicketResponse(requestDto, totalAmount, showSeats);
+        return buildBookTicketResponse(requestDto, totalAmount, showSeats,ticket);
     }
 
     private void lockShowSeats(List<ShowSeat> showSeats) {
@@ -96,50 +96,59 @@ public class TicketService {
         return ticketRepository.save(ticket);
     }
 
-    private BookTicketResponseDto buildBookTicketResponse(BookTicketRequestDto requestDto, double amount, List<ShowSeat> showSeats) {
+    private BookTicketResponseDto buildBookTicketResponse(BookTicketRequestDto requestDto, double amount, List<ShowSeat> showSeats,Ticket ticket) {
         BookTicketResponseDto responseDto = new BookTicketResponseDto();
         responseDto.setStatus(ResponseDtoStatus.PENDING);
         responseDto.setAmount(amount);
         responseDto.setUserID(requestDto.getUserId());
         responseDto.setShowSeats(showSeats);
+        responseDto.setTicketId(ticket.getId());
         return responseDto;
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
-    public TicketResponseDto confirmTicket(BookTicketRequestDto requestDto, PaymentResponseDto paymentResponseDto) throws Exception{
+    public TicketResponseDto confirmTicket(BookTicketResponseDto bookTicketResponseDto, PaymentResponseDto paymentResponseDto) throws Exception{
 
-        // Fetch the show seats
-        List<ShowSeat> showSeats = showSeatRepository.findByIdIn(requestDto.getShowSeatIds());
+
+        Optional<Ticket> ticket=ticketRepository.findById(bookTicketResponseDto.getTicketId()) ;
+        if(ticket.isEmpty()){
+            throw new InvalidTicketIdException("Invalid Ticket Id");
+        }
+        ticket.get().setTicketStatus(TicketStatus.SUCCESS);
 
         // Mark seats as booked
-        markSeatsAsBooked(showSeats);
+        ticket.get().setShowSeats(markSeatsAsBooked(bookTicketResponseDto.getShowSeats()));
+
+        ticketRepository.save(ticket.get());
 
         // Build response DTO
-        return buildTicketResponse(requestDto, paymentResponseDto, showSeats);
+        return buildTicketResponse(bookTicketResponseDto, paymentResponseDto);
     }
 
-    private void markSeatsAsBooked(List<ShowSeat> showSeats) {
+    private List<ShowSeat> markSeatsAsBooked(List<ShowSeat> showSeats) {
+        List<ShowSeat> seats=new ArrayList<>();
         for (ShowSeat showSeat : showSeats) {
             showSeat.setShowSeatState(ShowSeatState.BOOKED);
-            showSeatRepository.save(showSeat);
+            seats.add(showSeatRepository.save(showSeat));
         }
+        return seats;
     }
 
-    private TicketResponseDto buildTicketResponse(BookTicketRequestDto requestDto, PaymentResponseDto paymentResponseDto, List<ShowSeat> showSeats) throws Exception{
-        Optional<Show> show = showRepository.findById(requestDto.getShowId());
-
-        if(show.isEmpty()){
-            throw new ShowNotFound("Show not found");
-        }
+    private TicketResponseDto buildTicketResponse(BookTicketResponseDto bookTicketResponseDto, PaymentResponseDto paymentResponseDto) throws Exception{
+        Show show = bookTicketResponseDto.getShowSeats().get(0).getShow();
 
         TicketResponseDto responseDto = new TicketResponseDto();
+        responseDto.setTicketId(bookTicketResponseDto.getTicketId());
         responseDto.setAmount(paymentResponseDto.getAmount());
-        responseDto.setShowSeatTypes(showSeats);
-        responseDto.setMovieName(show.get().getMovie().getName());
-        responseDto.setTime(show.get().getStartTime());
-        responseDto.setTheatreName(show.get().getAuditorium().getTheatre().getName());
-
+        responseDto.setShowSeatTypes(bookTicketResponseDto.getShowSeats());
+        responseDto.setMovieName(show.getMovie().getName());
+        responseDto.setTime(show.getStartTime());
+        responseDto.setTheatreName(show.getAuditorium().getTheatre().getName());
+        responseDto.setStatus(ResponseDtoStatus.SUCCESS);
         return responseDto;
     }
 
+    public void deleteTicket(TicketResponseDto ticketResponseDto){
+        ticketRepository.deleteById(ticketResponseDto.getTicketId());
+    }
 }

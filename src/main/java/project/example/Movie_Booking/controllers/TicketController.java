@@ -40,11 +40,11 @@ public class TicketController {
         }
     }
 
-    public TicketResponseDto confirmTicket(BookTicketRequestDto bookTicketRequestDto,PaymentResponseDto paymentResponseDto){
+    public TicketResponseDto confirmTicket(BookTicketResponseDto bookTicketResponseDto,PaymentResponseDto paymentResponseDto){
         try {
-            return ticketService.confirmTicket(bookTicketRequestDto,paymentResponseDto);
+            return ticketService.confirmTicket(bookTicketResponseDto,paymentResponseDto);
         }catch (Exception e){
-            seatService.makeSeatAvailable(bookTicketRequestDto);
+            seatService.makeSeatAvailable(bookTicketResponseDto);
             System.out.println(e.getMessage());
             TicketResponseDto ticketResponseDto=new TicketResponseDto();
             ticketResponseDto.setStatus(ResponseDtoStatus.FAILURE);
@@ -52,13 +52,14 @@ public class TicketController {
         }
     }
 
-    public void makeSeatAvailable(BookTicketResponseDto bookTicketResponseDto){
-        try {
-            BookTicketRequestDto bookTicketRequestDto=new BookTicketRequestDto();
-            bookTicketResponseDto.setShowSeats(bookTicketResponseDto.getShowSeats());
-            seatService.makeSeatAvailable(bookTicketRequestDto);
+
+
+    public void deleteTicket(TicketResponseDto ticketResponseDto){
+        try{
+            ticketService.deleteTicket(ticketResponseDto);
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
+
     }
 }

@@ -4,11 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import project.example.Movie_Booking.dtos.BookTicketRequestDto;
+import project.example.Movie_Booking.dtos.*;
 import project.example.Movie_Booking.exceptions.InvalideTheatreNameException;
-import project.example.Movie_Booking.dtos.RegisterSeatsIntoAuditoriumRequestDto;
-import project.example.Movie_Booking.dtos.RegisterSeatsIntoAuditoriumResponseDto;
-import project.example.Movie_Booking.dtos.ResponseDtoStatus;
 import project.example.Movie_Booking.exceptions.InvalidCityNameException;
 import project.example.Movie_Booking.exceptions.InvalidSeatCountException;
 import project.example.Movie_Booking.models.*;
@@ -113,10 +110,9 @@ public class SeatService {
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void makeSeatAvailable(BookTicketRequestDto bookTicketRequestDto){
-        List<ShowSeat> showSeats =showSeatRepository.findByIdIn(bookTicketRequestDto.getShowSeatIds());
+    public void makeSeatAvailable(BookTicketResponseDto bookTicketResponseDto){
 
-        for(ShowSeat seats:showSeats){
+        for(ShowSeat seats: bookTicketResponseDto.getShowSeats()){
             seats.setShowSeatState(ShowSeatState.AVAILABLE);
             showSeatRepository.save(seats);
         }

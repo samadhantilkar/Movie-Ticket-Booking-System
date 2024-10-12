@@ -1,7 +1,7 @@
 # Movie Ticket Booking Application
 
 ## Overview
-The Movie Ticket Booking Application is a Java-based application developed using Spring Boot, designed to streamline the process of booking movie tickets. This application allows users to register, browse movies, check available shows, and book tickets while managing various aspects like cities, theatres, auditoriums, and seat selection.
+The Movie Ticket Booking Application is a Java-based application developed using Spring Boot, designed to streamline the process of booking movie tickets. This application allows users to register, and book tickets while managing various aspects like cities, theatres, auditoriums, and seat selection.
 
 ## Features
 - **User Registration & Authentication**: Secure user registration and login functionality.
@@ -19,21 +19,9 @@ The Movie Ticket Booking Application is a Java-based application developed using
 - **Java**: Core programming language.
 - **Spring Boot**: Framework for building the application.
 - **JPA (Java Persistence API)**: For database interactions.
-- **MySQL**: Database management system.
+- **PostgreSQL**: Database management system.
 - **Multithreading**: For handling concurrent ticket bookings.
 
 ## Design Patterns
 - **Adapter Pattern**: Used for integrating payment gateways, allowing seamless payment processing.
 - **Strategy Pattern**: Implemented for managing different payment modes (credit card and debit card).
-
-## Getting Started
-### Prerequisites
-- Java 11 or higher
-- Maven
-- MySQL database
-
-### Installation
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/movie-ticket-booking.git
-

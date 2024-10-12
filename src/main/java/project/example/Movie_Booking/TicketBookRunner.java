@@ -64,14 +64,11 @@ public class TicketBookRunner implements Runnable {
                 else {
                     // If payment fails, make the seats available again
                     seatController.makeSeatAvailable(bookTicketResponseDto);
-                    // delete payment info refund payment
-                    paymentController.refundPayment(createRefundDto(paymentResponseDto.getId()));
                 }
             }
         } catch (Exception e) {
             // Catch any exceptions and print an error message
             System.out.println("Error occurred: " + e.getMessage());
-
         }
     }
 

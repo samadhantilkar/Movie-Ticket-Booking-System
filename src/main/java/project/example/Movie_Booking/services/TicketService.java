@@ -88,9 +88,8 @@ public class TicketService {
         return responseDto;
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
-    public TicketResponseDto confirmTicket(BookTicketRequestDto bookTicketRequestDto,BookTicketResponseDto bookTicketResponseDto, PaymentResponseDto paymentResponseDto) throws Exception{
-
+    public TicketResponseDto confirmTicket(BookTicketRequestDto bookTicketRequestDto,BookTicketResponseDto bookTicketResponseDto, PaymentResponseDto paymentResponseDto) throws Exception
+    {
         Ticket ticket=new Ticket();
         ticket.setTotalAmount(bookTicketResponseDto.getAmount());
         User user=userRepository.findById(bookTicketResponseDto.getUserID()).orElseThrow(()-> new UsernameNotFoundException("Invalid User Id:"+bookTicketResponseDto.getUserID()));

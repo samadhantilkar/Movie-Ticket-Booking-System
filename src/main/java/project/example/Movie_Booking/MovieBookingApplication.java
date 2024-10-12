@@ -76,7 +76,7 @@ public class MovieBookingApplication implements CommandLineRunner {
 //		System.out.println(updateCityResponseDto.getStatus());
 //
 		RegisterTheatreRequestDto registerTheatreRequestDto=new RegisterTheatreRequestDto();
-		registerTheatreRequestDto.setName("PVR");
+		registerTheatreRequestDto.setName("Galaxy Theatre");
 		registerTheatreRequestDto.setCity("Nashik");
 		registerTheatreRequestDto.setAddress("City Central Mall Nashik");
 		this.theatreController.registerTheatre(registerTheatreRequestDto);
@@ -84,8 +84,8 @@ public class MovieBookingApplication implements CommandLineRunner {
 		RegisterAuditoriumRequestDto registerAuditoriumRequestDto=new RegisterAuditoriumRequestDto();
 		registerAuditoriumRequestDto.setCapacity(120);
 		registerAuditoriumRequestDto.setCityName("Nashik");
-		registerAuditoriumRequestDto.setTheatreName("PVR");
-		registerAuditoriumRequestDto.setName("Hall");
+		registerAuditoriumRequestDto.setTheatreName("Galaxy Theatre");
+		registerAuditoriumRequestDto.setName("Grandview Auditorium");
 		registerAuditoriumRequestDto.setAuditoriumFeatures(List.of(AuditoriumFeature.DOLBY,AuditoriumFeature.THREE_D));
 		this.auditoriumController.createAuditorium(registerAuditoriumRequestDto);
 
@@ -95,36 +95,52 @@ public class MovieBookingApplication implements CommandLineRunner {
 		seatsForAudi.put(SeatType.GOLD,100);
 		registerSeatsIntoAuditoriumRequestDto.setSeatCount(seatsForAudi);
 		registerSeatsIntoAuditoriumRequestDto.setCityName("Nashik");
-		registerSeatsIntoAuditoriumRequestDto.setTheatreName("PVR");
-		registerSeatsIntoAuditoriumRequestDto.setAuditoriumName("Hall");
+		registerSeatsIntoAuditoriumRequestDto.setTheatreName("Galaxy Theatre");
+		registerSeatsIntoAuditoriumRequestDto.setAuditoriumName("Grandview Auditorium");
 		this.seatController.createSeats(registerSeatsIntoAuditoriumRequestDto);
 
 		RegisterActorRequestDto registerActorRequestDto=new RegisterActorRequestDto();
-		registerActorRequestDto.setName("Anushka Sharma");
+		registerActorRequestDto.setName("Jesse Eisenberg");
 		actorController.registerActor(registerActorRequestDto);
+
+		RegisterActorRequestDto registerActorRequestDto1=new RegisterActorRequestDto();
+		registerActorRequestDto1.setName("Max Minghella");
+		actorController.registerActor(registerActorRequestDto1);
+
+		RegisterActorRequestDto registerActorRequestDto2=new RegisterActorRequestDto();
+		registerActorRequestDto2.setName("Andrew Garfield");
+		actorController.registerActor(registerActorRequestDto2);
+
+		RegisterActorRequestDto registerActorRequestDto3=new RegisterActorRequestDto();
+		registerActorRequestDto3.setName("Justin Timberlake");
+		actorController.registerActor(registerActorRequestDto3);
+
+		RegisterActorRequestDto registerActorRequestDto4=new RegisterActorRequestDto();
+		registerActorRequestDto4.setName("Armie Hammer");
+		actorController.registerActor(registerActorRequestDto4);
 //
 		RegisterMovieRequestDto registerMovieRequestDto=new RegisterMovieRequestDto();
-		registerMovieRequestDto.setName("Sairat");
+		registerMovieRequestDto.setName("The Social Network");
 		registerMovieRequestDto.setLength(180);
 		registerMovieRequestDto.setMovieFeatures(List.of(MovieFeature.THREE_D,MovieFeature.DOLBY));
 		registerMovieRequestDto.setLanguages(List.of(Language.MARATHI));
-		registerMovieRequestDto.setActorName(List.of("Anushka Sharma"));
+		registerMovieRequestDto.setActorName(List.of("Jesse Eisenberg","Andrew Garfield","Justin Timberlake","Armie Hammer","Max Minghella"));
 		movieController.registerMovie(registerMovieRequestDto);
 
 		CreateShowRequestDto showRequestDto=new CreateShowRequestDto();
 		showRequestDto.setLanguage(Language.ENGLISH);
 		showRequestDto.setShowFeatures(List.of(ShowFeature.TWO_D,ShowFeature.DOLBY));
-		showRequestDto.setMovieName("Sairat");
+		showRequestDto.setMovieName("The Social Network");
 		showRequestDto.setCityName("Nashik");
-		showRequestDto.setTheatreName("PVR");
-		showRequestDto.setAuditoriumName("Hall");
+		showRequestDto.setTheatreName("Galaxy Theatre");
+		showRequestDto.setAuditoriumName("Grandview Auditorium");
 		showRequestDto.setStartTime(new Date());
 		HashMap<SeatType,Integer> showSeatPrice=new LinkedHashMap<>();
 		showSeatPrice.put(SeatType.GOLD,300);
 		showSeatPrice.put(SeatType.VIP,500);
 		showSeatPrice.put(SeatType.SILVER,200);
 		showRequestDto.setShowSeatPrice(showSeatPrice);
-		showRequestDto.setShowSeatType(List.of(1L,2L));
+		showRequestDto.setShowSeatType(List.of(1L,2L,3L));
 		System.out.println(this.showController.createShow(showRequestDto).getStatus());
 
 		BookTicketRequestDto bookTicketRequestDto=new BookTicketRequestDto();
@@ -133,30 +149,15 @@ public class MovieBookingApplication implements CommandLineRunner {
 		bookTicketRequestDto.setShowSeatIds(List.of(34L,41L,11L));
 		TicketBookRunner user1=new TicketBookRunner(this.ticketController,paymentController,bookTicketRequestDto,seatController);
 
-//		BookTicketRequestDto bookTicketRequestDto1=new BookTicketRequestDto();
-//		bookTicketRequestDto1.setShowId(1L);
-//		bookTicketRequestDto1.setUserId(1L);
-//		bookTicketRequestDto1.setShowSeatIds(List.of(34L,5L,12L));
-//		TicketBookRunner user2=new TicketBookRunner(this.ticketController,paymentController,bookTicketRequestDto1,seatController);
+		BookTicketRequestDto bookTicketRequestDto1=new BookTicketRequestDto();
+		bookTicketRequestDto1.setShowId(1L);
+		bookTicketRequestDto1.setUserId(1L);
+		bookTicketRequestDto1.setShowSeatIds(List.of(34L,5L,12L));
+		TicketBookRunner user2=new TicketBookRunner(this.ticketController,paymentController,bookTicketRequestDto1,seatController);
 
 		Thread t1=new Thread(user1);
-//		Thread t2=new Thread(user2);
+		Thread t2=new Thread(user2);
 		t1.start();
-//		t2.start();
-
-//		PaymentRequestDto paymentRequestDto =new PaymentRequestDto();
-//		paymentRequestDto.setShowId(1L);
-//		paymentRequestDto.setAmount(1100D);
-//		paymentRequestDto.setPaymentMethod(PaymentMethod.DEBIT_CARD);
-//		paymentRequestDto.setCardNumber("321213124325");
-//		Date date = new Date();
-//		Calendar calendar = Calendar.getInstance();
-//		calendar.setTime(date);
-//		calendar.add(Calendar.YEAR, 5);
-//		Date newDate = calendar.getTime();
-//		paymentRequestDto.setDate(newDate);
-//		paymentRequestDto.setCvv(4123);
-//		PaymentResponseDto paymentResponseDto=paymentController.makePayment(paymentRequestDto);
-//		System.out.println(paymentResponseDto.getStatus());
+		t2.start();
 	}
 }

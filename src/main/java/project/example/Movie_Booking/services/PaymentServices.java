@@ -30,7 +30,6 @@ public class PaymentServices {
         this.paymentRepository=paymentRepository;
         this.modelMapper=modelMapper;
     }
-    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
     public PaymentResponseDto makePayment(PaymentRequestDto paymentRequestDto) {
         String paymentId = paymentGateway.payMoney( paymentRequestDto.getPaymentMethod(),
                 paymentRequestDto.getAmount(), paymentRequestDto.getCardNumber(),

@@ -28,4 +28,10 @@ public class PayUPaymentGatewayAdapter implements PaymentGateway{
         }
         return PaymentStatus.FAILURE;
     }
+
+    @Override
+    public PaymentStatus refundMoney(String id) {
+        PaymentStatus paymentStatus=payUGateway.refundMoney(id);
+        return paymentStatus;
+    }
 }

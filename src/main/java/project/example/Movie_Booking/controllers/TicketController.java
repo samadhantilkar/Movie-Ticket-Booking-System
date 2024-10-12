@@ -40,9 +40,9 @@ public class TicketController {
         }
     }
 
-    public TicketResponseDto confirmTicket(BookTicketResponseDto bookTicketResponseDto,PaymentResponseDto paymentResponseDto){
+    public TicketResponseDto confirmTicket(BookTicketRequestDto bookTicketRequestDto,BookTicketResponseDto bookTicketResponseDto,PaymentResponseDto paymentResponseDto){
         try {
-            return ticketService.confirmTicket(bookTicketResponseDto,paymentResponseDto);
+            return ticketService.confirmTicket(bookTicketRequestDto,bookTicketResponseDto,paymentResponseDto);
         }catch (Exception e){
             seatService.makeSeatAvailable(bookTicketResponseDto);
             System.out.println(e.getMessage());

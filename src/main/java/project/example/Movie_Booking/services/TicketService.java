@@ -1,6 +1,7 @@
 package project.example.Movie_Booking.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,17 +16,16 @@ import java.util.*;
 public class TicketService {
 
     private final ShowSeatRepository showSeatRepository;
-    private final UserRepository userRepository;
     private final ShowRepository showRepository;
     private final TicketRepository ticketRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public TicketService(ShowSeatRepository showSeatRepository, UserRepository userRepository,
-                         ShowRepository showRepository, TicketRepository ticketRepository) {
+    public TicketService(ShowSeatRepository showSeatRepository, ShowRepository showRepository, TicketRepository ticketRepository,UserRepository userRepository) {
         this.showSeatRepository = showSeatRepository;
-        this.userRepository = userRepository;
         this.showRepository = showRepository;
         this.ticketRepository = ticketRepository;
+        this.userRepository=userRepository;
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
@@ -53,11 +53,8 @@ public class TicketService {
 
         double totalAmount = calculateTotalAmount(showSeats, show.getShowSeatTypes());
 
-        // Create and save the ticket
-        Ticket ticket = createTicket(requestDto, show, showSeats, totalAmount);
-
         // Build response DTO
-        return buildBookTicketResponse(requestDto, totalAmount, showSeats,ticket);
+        return buildBookTicketResponse(requestDto, totalAmount, showSeats);
     }
 
     private void lockShowSeats(List<ShowSeat> showSeats) {
@@ -82,44 +79,28 @@ public class TicketService {
         return totalAmount;
     }
 
-    private Ticket createTicket(BookTicketRequestDto requestDto, Show show, List<ShowSeat> showSeats, double totalAmount) throws Exception {
-        User user = userRepository.findById(requestDto.getUserId())
-                .orElseThrow(() -> new Exception("User not found"));
-
-        Ticket ticket = new Ticket();
-        ticket.setTicketStatus(TicketStatus.PENDING);
-        ticket.setBookedBy(user);
-        ticket.setShow(show);
-        ticket.setShowSeats(showSeats);
-        ticket.setTotalAmount(totalAmount);
-
-        return ticketRepository.save(ticket);
-    }
-
-    private BookTicketResponseDto buildBookTicketResponse(BookTicketRequestDto requestDto, double amount, List<ShowSeat> showSeats,Ticket ticket) {
+    private BookTicketResponseDto buildBookTicketResponse(BookTicketRequestDto requestDto, double amount, List<ShowSeat> showSeats) {
         BookTicketResponseDto responseDto = new BookTicketResponseDto();
         responseDto.setStatus(ResponseDtoStatus.PENDING);
         responseDto.setAmount(amount);
         responseDto.setUserID(requestDto.getUserId());
         responseDto.setShowSeats(showSeats);
-        responseDto.setTicketId(ticket.getId());
         return responseDto;
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
-    public TicketResponseDto confirmTicket(BookTicketResponseDto bookTicketResponseDto, PaymentResponseDto paymentResponseDto) throws Exception{
+    public TicketResponseDto confirmTicket(BookTicketRequestDto bookTicketRequestDto,BookTicketResponseDto bookTicketResponseDto, PaymentResponseDto paymentResponseDto) throws Exception{
 
-
-        Optional<Ticket> ticket=ticketRepository.findById(bookTicketResponseDto.getTicketId()) ;
-        if(ticket.isEmpty()){
-            throw new InvalidTicketIdException("Invalid Ticket Id");
-        }
-        ticket.get().setTicketStatus(TicketStatus.SUCCESS);
-
-        // Mark seats as booked
-        ticket.get().setShowSeats(markSeatsAsBooked(bookTicketResponseDto.getShowSeats()));
-
-        ticketRepository.save(ticket.get());
+        Ticket ticket=new Ticket();
+        ticket.setTotalAmount(bookTicketResponseDto.getAmount());
+        User user=userRepository.findById(bookTicketResponseDto.getUserID()).orElseThrow(()-> new UsernameNotFoundException("Invalid User Id:"+bookTicketResponseDto.getUserID()));
+        ticket.setBookedBy(user);
+        ticket.setTicketStatus(TicketStatus.SUCCESS);
+        ticket.setShowSeats(bookTicketResponseDto.getShowSeats());
+        Show show=showRepository.findById(bookTicketRequestDto.getShowId()).orElseThrow(()-> new ShowNotFound("Invalid Show Id:"+bookTicketRequestDto.getShowId()));
+        ticket.setShow(show);
+        markSeatsAsBooked(bookTicketResponseDto.getShowSeats());
+        ticketRepository.save(ticket);
 
         // Build response DTO
         return buildTicketResponse(bookTicketResponseDto, paymentResponseDto);
@@ -138,7 +119,6 @@ public class TicketService {
         Show show = bookTicketResponseDto.getShowSeats().get(0).getShow();
 
         TicketResponseDto responseDto = new TicketResponseDto();
-        responseDto.setTicketId(bookTicketResponseDto.getTicketId());
         responseDto.setAmount(paymentResponseDto.getAmount());
         responseDto.setShowSeatTypes(bookTicketResponseDto.getShowSeats());
         responseDto.setMovieName(show.getMovie().getName());

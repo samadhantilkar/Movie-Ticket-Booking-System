@@ -22,6 +22,10 @@ public class PayUGateway{
         return  paymentId;
     }
     public PaymentStatus getStatus(Long id) {
-        return null;
+        return PaymentStatus.SUCCESS;
+    }
+
+    public PaymentStatus refundMoney(String id){
+        return PaymentStatus.REFUND;
     }
 }

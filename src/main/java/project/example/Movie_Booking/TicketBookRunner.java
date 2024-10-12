@@ -30,49 +30,69 @@ public class TicketBookRunner implements Runnable {
     }
 
     @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED,rollbackFor = Exception.class)
     public void run() {
         try {
-            // Step 1: Book the ticket (pending status)
+            // Step 1: Book the seat with looked
             BookTicketResponseDto bookTicketResponseDto = ticketController.bookTicket(requestDto);
 
-            // Step 2: If the ticket is pending, proceed with payment
+            // Step 2: If the status is pending, proceed with payment
             if (bookTicketResponseDto.getStatus() .equals(ResponseDtoStatus.PENDING)) {
+
+                //step 3: take input from user
                 PaymentRequestDto paymentRequestDto = createPaymentRequest(bookTicketResponseDto);
 
-                // Step 3: Make the payment
+                // Step 4: Make the payment
                 PaymentResponseDto paymentResponseDto = paymentController.makePayment(paymentRequestDto);
 
-                // Step 4: If payment is successful, confirm the ticket
+                // Step 5: If payment is successful, confirm the ticket
                 if (paymentResponseDto.getStatus().equals(ResponseDtoStatus.SUCCESS)) {
-                    TicketResponseDto ticketResponseDto = ticketController.confirmTicket(bookTicketResponseDto, paymentResponseDto);
+                    TicketResponseDto ticketResponseDto = ticketController.confirmTicket(requestDto,bookTicketResponseDto, paymentResponseDto);
 
-                    // Step 5: If ticket confirmation is successful, print ticket details
+                    // Step 6: If ticket confirmation is successful, print ticket details
                     if (ticketResponseDto.getStatus().equals(ResponseDtoStatus.SUCCESS)) {
                         printTicketDetails(ticketResponseDto, bookTicketResponseDto);
-                    } else {
+                    }
+                    else {
                         // If ticket confirmation fails, make the seats available again
                         seatController.makeSeatAvailable(bookTicketResponseDto);
+                        // delete payment info refund payment
+                        paymentController.refundPayment(createRefundDto(paymentResponseDto.getId()));
+
                     }
-                } else {
+                }
+                else {
                     // If payment fails, make the seats available again
                     seatController.makeSeatAvailable(bookTicketResponseDto);
+                    // delete payment info refund payment
+                    paymentController.refundPayment(createRefundDto(paymentResponseDto.getId()));
                 }
             }
         } catch (Exception e) {
             // Catch any exceptions and print an error message
             System.out.println("Error occurred: " + e.getMessage());
+
         }
+    }
+
+    //Create Refund Request Dto
+    private RefundPaymentRequestDto createRefundDto(String id){
+        RefundPaymentRequestDto refundPaymentRequestDto=new RefundPaymentRequestDto();
+        refundPaymentRequestDto.setPaymentId(id);
+        return refundPaymentRequestDto;
     }
 
     // Create a payment request by taking user inputs and ticket details
     private PaymentRequestDto createPaymentRequest(BookTicketResponseDto bookTicketResponseDto) {
+        System.out.println("Total Amount:"+bookTicketResponseDto.getAmount());
+
         PaymentRequestDto paymentRequestDto = new PaymentRequestDto();
         paymentRequestDto.setPaymentMethod(getValidPaymentMethod()); // Get valid payment method from user input
         paymentRequestDto.setDate(new Date()); // Set current date for payment
         paymentRequestDto.setAmount(bookTicketResponseDto.getAmount()); // Set amount from ticket response
         paymentRequestDto.setShowId(requestDto.getShowId()); // Set show ID from the ticket request
         paymentRequestDto.setCardNumber(getInput("Enter Card Number:")); // Get card number from user input
-        paymentRequestDto.setCvv(getCvv()); // Get CVV from user input
+        paymentRequestDto.setCvv(getCvv());
         return paymentRequestDto;
     }
 
@@ -101,7 +121,7 @@ public class TicketBookRunner implements Runnable {
             } catch (Exception e) {
                 // Handle invalid input (e.g., non-integer)
                 System.out.println("Invalid CVV. Please enter a valid number.");
-                scanner.nextLine();  // Clear the invalid input
+                scanner.nextLine();
             }
         }
     }

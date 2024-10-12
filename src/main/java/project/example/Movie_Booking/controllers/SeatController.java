@@ -2,10 +2,7 @@ package project.example.Movie_Booking.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import project.example.Movie_Booking.dtos.BookTicketResponseDto;
-import project.example.Movie_Booking.dtos.RegisterSeatsIntoAuditoriumRequestDto;
-import project.example.Movie_Booking.dtos.RegisterSeatsIntoAuditoriumResponseDto;
-import project.example.Movie_Booking.dtos.ResponseDtoStatus;
+import project.example.Movie_Booking.dtos.*;
 import project.example.Movie_Booking.services.SeatService;
 
 @Controller
@@ -53,5 +50,9 @@ public class SeatController {
         if (field.replaceAll("\\s", "").isEmpty()) {
             throw new IllegalArgumentException(errorMessage);
         }
+    }
+
+    public void ExceptionRollBack(BookTicketRequestDto bookTicketRequestDto){
+        seatService.exceptionRollBack(bookTicketRequestDto);
     }
 }

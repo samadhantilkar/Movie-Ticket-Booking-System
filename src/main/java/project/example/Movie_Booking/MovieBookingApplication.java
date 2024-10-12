@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import project.example.Movie_Booking.controllers.*;
 import project.example.Movie_Booking.dtos.*;
@@ -127,13 +126,19 @@ public class MovieBookingApplication implements CommandLineRunner {
 		showRequestDto.setShowSeatPrice(showSeatPrice);
 		showRequestDto.setShowSeatType(List.of(1L,2L));
 		System.out.println(this.showController.createShow(showRequestDto).getStatus());
-//
+
 		BookTicketRequestDto bookTicketRequestDto=new BookTicketRequestDto();
 		bookTicketRequestDto.setShowId(1L);
 		bookTicketRequestDto.setUserId(1L);
 		bookTicketRequestDto.setShowSeatIds(List.of(34L,41L,11L));
 		TicketBookRunner user1=new TicketBookRunner(this.ticketController,paymentController,bookTicketRequestDto,seatController);
-//
+
+//		BookTicketRequestDto bookTicketRequestDto1=new BookTicketRequestDto();
+//		bookTicketRequestDto1.setShowId(1L);
+//		bookTicketRequestDto1.setUserId(1L);
+//		bookTicketRequestDto1.setShowSeatIds(List.of(34L,5L,12L));
+//		TicketBookRunner user2=new TicketBookRunner(this.ticketController,paymentController,bookTicketRequestDto1,seatController);
+
 		Thread t1=new Thread(user1);
 //		Thread t2=new Thread(user2);
 		t1.start();

@@ -30,4 +30,10 @@ public class RazorpayPaymentGatewayAdapter implements PaymentGateway{
         }
         return PaymentStatus.FAILURE;
     }
+
+    @Override
+    public PaymentStatus refundMoney(String id) {
+        PaymentStatus paymentStatus=razorPayGateway.refundMoney(id);
+        return paymentStatus;
+    }
 }

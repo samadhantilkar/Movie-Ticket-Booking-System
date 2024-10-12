@@ -117,4 +117,13 @@ public class SeatService {
             showSeatRepository.save(seats);
         }
     }
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public void exceptionRollBack(BookTicketRequestDto requestDto){
+        List<ShowSeat> seats=showSeatRepository.findByIdIn(requestDto.getShowSeatIds());
+
+        for(ShowSeat showSeat:seats){
+            showSeat.setShowSeatState(ShowSeatState.AVAILABLE);
+            showSeatRepository.save(showSeat);
+        }
+    }
 }

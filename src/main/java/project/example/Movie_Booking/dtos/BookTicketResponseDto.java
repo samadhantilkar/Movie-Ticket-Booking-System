@@ -15,6 +15,4 @@ public class BookTicketResponseDto extends ResponseDto {
     private Double amount;
     @NonNull
     private List<ShowSeat> showSeats;
-
-    private Long ticketId;
 }

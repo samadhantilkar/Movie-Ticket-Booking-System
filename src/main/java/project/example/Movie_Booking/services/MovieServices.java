@@ -38,6 +38,7 @@ public class MovieServices {
             if (actors1.isEmpty()){
                 throw new InvalidActorNameException("Actor "+ actorName+ " Name Not Found");
             }
+            actors.add(actors1.get(0));
         }
         movie.setActors(actors);
 

@@ -9,4 +9,6 @@ import java.util.Date;
 public interface PaymentGateway {
     String payMoney(PaymentMethod paymentMethod, Double amount, String cardNumber,int cvv, Date Date);
     PaymentStatus getStatus(Long id);
+
+    PaymentStatus refundMoney(String id);
 }

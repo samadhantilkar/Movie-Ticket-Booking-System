@@ -3,6 +3,7 @@ package project.example.Movie_Booking.services.Adapter.RazorPay;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import project.example.Movie_Booking.models.PaymentMethod;
+import project.example.Movie_Booking.services.Adapter.PaymentStatus;
 import project.example.Movie_Booking.services.Adapter.RazorPay.Strategy.RazorPayPaymentStrategy;
 import project.example.Movie_Booking.services.Adapter.RazorPay.Strategy.PaymentStrategyRegistry;
 
@@ -27,5 +28,9 @@ public class RazorPayGateway{
 
     public boolean checkPaymentStatus(String id){
         return true;
+    }
+
+    public PaymentStatus refundMoney(String id){
+        return PaymentStatus.REFUND;
     }
 }
